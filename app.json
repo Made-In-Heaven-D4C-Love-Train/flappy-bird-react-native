@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "Flappy Bird",
+    "slug": "flappy-bird",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/flappy-bird-icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/flappy-bird-splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/flappy-bird-icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "com.ledieudelaflemme.flappybird"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "63609b95-7f58-4bc2-a0a6-3cd9799919ce"
+      }
+    }
+  }
+}
