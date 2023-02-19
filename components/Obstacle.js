@@ -19,7 +19,7 @@ const resizeMode =
 
 return(
     //  <View style={{backgroundColor: color,position: 'absolute', left: xBody, top: yBody, width: widthBody, height: heightBody}}/>
-      <View style={{flex: 1,position: 'absolute', left: xBody, top: yBody, width: widthBody, height: heightBody}}>
+      <View style={{ flex: 1,position: 'absolute', left: xBody, top: yBody, width: widthBody, height: heightBody}}>
          {/* label.includes("ObstacleTop") */}
         {
           label && label.includes("ObstacleTop") ? (

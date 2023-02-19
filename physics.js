@@ -1,15 +1,17 @@
 import Matter from "matter-js";
 import { getPipeSizePosPair } from "./utils/random";
 import { Dimensions } from "react-native";
-
+import { godMode, setGodMode } from './GodMode';
+import { useState } from "react";
 const windowHeight = Dimensions.get('window').height
 const windowWidth = Dimensions.get('window').width
 //console.log(windowWidth)
 //console.log(windowHeight)
 const n = 4;
+
 const Physics = (entities, {touches, time, dispatch}) => {
     let engine = entities.physics.engine
-
+    let x = -3;
     touches.filter(t => t.type === 'press').forEach(t => {
         Matter.Body.setVelocity(entities.Bird.body, {
             x:0,
@@ -29,8 +31,20 @@ const Physics = (entities, {touches, time, dispatch}) => {
          Matter.Body.setPosition(entities[`ObstacleBottom${index + 1}`].body, pipeSizePos.pipeBottom.pos)
          entities[`ObstacleTop${index + 1}`].point = false;
     }
+    if(godMode === true){
+        //console.log("test")
+        
+            x = -5;
+            //console.log(x)
+            Matter.Body.translate(entities[`ObstacleTop${index + 1}`].body, {x: x, y:0})
+            Matter.Body.translate(entities[`ObstacleBottom${index + 1}`].body, {x: x, y:0})
+        
+        //console.log(x) 
+    }else{
+    //console.log(x)
     Matter.Body.translate(entities[`ObstacleTop${index + 1}`].body, {x: -3, y:0})
     Matter.Body.translate(entities[`ObstacleBottom${index + 1}`].body, {x: -3, y:0})
+    }
     }
     if (entities.Bird.body.position.y > windowHeight || entities.Bird.body.position.y < 0) {
         // Matter.Body.setPosition(entities.Bird.body, { x: windowWidth / 2, y: windowHeight / 2 })
