@@ -9,7 +9,7 @@ import { Audio } from 'expo-av';
 import { Dimensions } from "react-native";
 import { godMode, setGodMode } from './GodMode';
 import Background from './components/Background';
-import { paused, setPaused } from './Pause';
+//import { paused, setPaused } from './Pause';
 export default function App() {
   const windowHeight = Dimensions.get('window').height
   const [running, setRunning] = useState(false)
@@ -21,11 +21,29 @@ export default function App() {
   const [backgroundColor, setBackgroundColor] = useState('#4eadf5')
   const [opacity, setOpacity] = useState(0)
   const sound = new Audio.Sound();
+  // const sound2 = new Audio.Sound();
+  const [sound2, setSound2] = useState(null);
+  const [sound3, setSound3] = useState(null);
   const [message, setMessage] = useState("")
   const [clickCount, setClickCount] = useState(0);
   const [lastClickTime, setLastClickTime] = useState(null);
-  const [response, setResponse] = useState(false)
-  
+  const [response, setResponse] = useState(false);
+
+  const loadSound = async () => {
+    //const { sound2 } = await Audio.Sound.createAsync(require('./sounds/GIGACHAD-ONE-PUNCH-MAN.mp3'));
+    const sound = new Audio.Sound();
+    //sound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
+    await sound.loadAsync(require('./sounds/GIGACHAD-ONE-PUNCH-MAN(2).mp3'))
+    setSound2(sound);
+  };
+
+  const loadGodMode =  async () => {
+    const sound = new Audio.Sound();
+    //sound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
+    await sound.loadAsync(require('./sounds/MADE-IN-HEAVEN.mp3'));
+    setSound3(sound);
+  }
+
   const handleButtonPress = () => {
     const currentTime = new Date().getTime();
     
@@ -36,6 +54,7 @@ export default function App() {
       setClickCount(clickCount + 1);
       setLastClickTime(currentTime);
     } else if (clickCount >= 5) {
+      
       setClickCount(0);
       setLastClickTime(null);
       //console.log("yes")
@@ -46,18 +65,17 @@ export default function App() {
 
   const callFunction = async () => {
     try {
-      if(response === false){
-      await sound.loadAsync(require('./sounds/MADE-IN-HEAVEN.mp3'));
-      await sound.playAsync();
-      const test = await sound.getStatusAsync()
+     
+        //console.log("espoir")
+      // GOD MODE
+      await sound3.playAsync();
+      const test = await sound3.getStatusAsync()
       setResponse(test.isPlaying);
       //console.log(test.isPlaying)
       setMessage("God Mode Enabled")
       setGodMode(true)
-      setTimeout(function() {
-        setResponse(false);
-      }, 48000);
-      }
+      
+      
       
       //console.log("God Mode Enabled")
     } catch (error) {
@@ -69,7 +87,8 @@ export default function App() {
     setRunning(false)
     setPaused(false)
     //this.sound = new Audio.Sound();
-    
+    loadSound();
+    loadGodMode();
     AsyncStorage.getItem('bestScore').then((value) => {
       if (value !== null) {
         setBestScore(parseInt(value))
@@ -87,6 +106,7 @@ export default function App() {
    playSound = async  () => {
     try {
       if(response === false){
+      pauseMusic();
       await sound.loadAsync(require('./sounds/ZA-WARUDO.mp3'));
       await sound.playAsync();
       const test = await sound.getStatusAsync()
@@ -101,7 +121,48 @@ export default function App() {
       console.log(error);
     }
   };
-  
+
+  playMusic = async  () => {
+    try {
+      
+      const testGodMode = await sound3.getStatusAsync()
+        if(testGodMode.isPlaying === false){
+          const status = await sound2.getStatusAsync();
+          if (status.isLoaded) {
+            await sound2.setIsLoopingAsync(true);
+            await sound2.playAsync();
+          }
+        
+      //console.log("play : "+ await sound2.getStatusAsync().isPlaying)
+      //await sound2.pauseAsync();
+      const test = await sound2.getStatusAsync()
+      setResponse(false);
+      //console.log(test.isPlaying)
+        }
+      // setTimeout(function() {
+      //   setResponse(false);
+      // }, 194000);
+    
+      //console.log("oui")
+    } catch (error) {
+      console.log("Erreur : "+error);
+    }
+  };
+
+  const pauseMusic = async () => {
+    try {
+      
+      const status = await sound2.getStatusAsync();
+    if (status.isLoaded && status.isPlaying) {
+      
+      await sound2.pauseAsync();
+      
+    }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
    const BackgroundImage = () => (
     <Image
       source={require('./assets/background-2.png')}
@@ -112,7 +173,7 @@ export default function App() {
          bottom: 0,
          right: 0,
          resizeMode: 'cover',
-         //tintColor: 'black'
+         
       }}
      />
    );
@@ -167,12 +228,15 @@ export default function App() {
       <Icon name="play-arrow" size={30} color="#fff" />
     </TouchableOpacity> : null }
     {/* music-note  music-off */}
+   
     { !music ? 
     <TouchableOpacity style={{backgroundColor: 'black', borderRadius: 30, paddingHorizontal: 10, paddingVertical: 10, position: 'absolute', top: 20, left: 20}}
     onPress = {() => {
       setMusic(true)
       {handleButtonPress()}
-      //console.log("ok")
+      {pauseMusic()}
+      // {playMusic()}
+      //console.log("desactive")
     }}>
       <Icon name="music-note" size={30} color="#fff" />
     </TouchableOpacity> : 
@@ -181,6 +245,8 @@ export default function App() {
     onPress = {() => {
       setMusic(false)
       {handleButtonPress()}
+      {playMusic()}
+      //console.log("active")
     }}>
       <Icon name="music-off" size={30} color="#fff" />
     </TouchableOpacity>
@@ -193,12 +259,22 @@ export default function App() {
         setPaused(true)
         gameEngine.stop()
         {playSound()}
+
       }}>
       <Icon name="pause" size={30} color="#fff" />
     </TouchableOpacity>
   // </View>
   : null}
 
+{ !music && paused && running ? 
+    <TouchableOpacity style={{backgroundColor: 'black', borderRadius: 30, paddingHorizontal: 10, paddingVertical: 10, position: 'absolute', top: 20, right: 20}}
+    onPress = {() => {
+      setPaused(false)
+      gameEngine.start()
+      {playMusic()}
+    }}>
+      <Icon name="play-arrow" size={30} color="#fff" />
+    </TouchableOpacity> : null }
 
       { !running ? 
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>

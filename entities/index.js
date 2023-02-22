@@ -4,7 +4,7 @@ import Floor from "../components/Floor";
 import { Dimensions } from 'react-native'
 import Obstacle from "../components/Obstacle";
 import { getPipeSizePosPair } from "../utils/random";
-import Cloud from "../components/Cloud";
+//import Cloud from "../components/Cloud";
 const windowHeight = Dimensions.get('window').height
 const windowWidth = Dimensions.get('window').width
 const pipeSizePosA = getPipeSizePosPair()
@@ -19,7 +19,7 @@ export default restart => {
       
     const entities = {
         physics: {engine, world},
-        Bird: Bird(world, 'yellow', {x: 50, y: 300}, {height: 40, width: 40}),
+        Bird: Bird(world, {x: 50, y: 300}, {height: 40, width: 40}),
         Floor: Floor(world, 'green', {x: windowWidth / 2, y: windowHeight}, {height: 50, width: windowWidth})
     };
 

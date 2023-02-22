@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, Image, AsyncStorage, Dimensions } from 'react-native';
 import { godMode } from '../GodMode';
 //import { paused, setPaused } from '../Pause';
@@ -9,20 +9,22 @@ console.log("width:"+windowWidth)
 const Cloud = ({top, v, paused, setPaused}) => {
     const [x, setX] = useState(v);
     const limit = -1000;
-    const [startTime, setStartTime] = useState(Date.now());
+    // const [startTime, setStartTime] = useState(Date.now());
+    const startTime = useRef(Date.now());
     useEffect(() => {
       
       const intervalId = setInterval(() => {
         //let currentX = x;
         const elapsedTime = Date.now() - startTime;
-        const currentX = v * (elapsedTime / 1000);
+        //const currentX = v * (elapsedTime / 1000);
         let vitesse = 0;
       if(godMode === true) vitesse = 20
       else vitesse = 10
       //console.log(paused)
       if(paused){
-        setX(currentX => currentX)
+        //setX(currentX => currentX)
       }else{
+        const currentX = v * (elapsedTime / 1000);
         setX(currentX => currentX < limit ? currentX + 2000 : currentX - vitesse);
       }
       

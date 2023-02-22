@@ -3,59 +3,62 @@ import { getPipeSizePosPair } from "./utils/random";
 import { Dimensions } from "react-native";
 import { godMode, setGodMode } from './GodMode';
 import { useState } from "react";
+
 const windowHeight = Dimensions.get('window').height
 const windowWidth = Dimensions.get('window').width
-//console.log(windowWidth)
-//console.log(windowHeight)
 const n = 4;
+const obstacleSpeed = -3;
 
 const Physics = (entities, {touches, time, dispatch}) => {
-    let engine = entities.physics.engine
-    let x = -3;
-    touches.filter(t => t.type === 'press').forEach(t => {
-        Matter.Body.setVelocity(entities.Bird.body, {
-            x:0,
-            y: -8,
-        })
-    })
-    Matter.Engine.update(engine, time.delta)
-    for (let index=0; index<n; index++){
-        if(entities[`ObstacleTop${index + 1}`].body.bounds.max.x <= 50 && !entities[`ObstacleTop${index + 1}`].point){
-            entities[`ObstacleTop${index + 1}`].point = true;
-            dispatch({type: 'new_point'});
-            
-        }
-     if(entities[`ObstacleTop${index + 1}`].body.bounds.max.x <= 0){
-         const pipeSizePos = getPipeSizePosPair(windowWidth * 0.9)
-        Matter.Body.setPosition(entities[`ObstacleTop${index + 1}`].body, pipeSizePos.pipeTop.pos)
-         Matter.Body.setPosition(entities[`ObstacleBottom${index + 1}`].body, pipeSizePos.pipeBottom.pos)
-         entities[`ObstacleTop${index + 1}`].point = false;
-    }
-    if(godMode === true){
-        //console.log("test")
-        
-            x = -5;
-            //console.log(x)
-            Matter.Body.translate(entities[`ObstacleTop${index + 1}`].body, {x: x, y:0})
-            Matter.Body.translate(entities[`ObstacleBottom${index + 1}`].body, {x: x, y:0})
-        
-        //console.log(x) 
-    }else{
-    //console.log(x)
-    Matter.Body.translate(entities[`ObstacleTop${index + 1}`].body, {x: -3, y:0})
-    Matter.Body.translate(entities[`ObstacleBottom${index + 1}`].body, {x: -3, y:0})
-    }
-    }
-    if (entities.Bird.body.position.y > windowHeight || entities.Bird.body.position.y < 0) {
-        // Matter.Body.setPosition(entities.Bird.body, { x: windowWidth / 2, y: windowHeight / 2 })
-        dispatch({ type: 'game_over' })
-      }
+    let engine = entities.physics.engine;
     
+    // Récupérer l'événement de pression du joueur sur l'écran
+    const jumpTouches = touches.filter(t => t.type === 'press');
+    
+    // Appliquer une impulsion à l'oiseau en fonction des événements de pression
+    jumpTouches.forEach(() => {
+        Matter.Body.setVelocity(entities.Bird.body, {
+            x: 0,
+            y: -8,
+        });
+    });
+    
+    // Mettre à jour le moteur physique
+    Matter.Engine.update(engine, time.delta);
+    
+    // Mettre à jour la position des obstacles
+    for (let index=0; index<n; index++){
+        const obstacleTop = entities[`ObstacleTop${index + 1}`];
+        const obstacleBottom = entities[`ObstacleBottom${index + 1}`];
+        
+        // Vérifier si l'obstacle a été franchi
+        if(obstacleTop.body.bounds.max.x <= 50 && !obstacleTop.point){
+            obstacleTop.point = true;
+            dispatch({type: 'new_point'});
+        }
+        
+        // Repositionner l'obstacle une fois qu'il est sorti de l'écran
+        if(obstacleTop.body.bounds.max.x <= 0){
+            const pipeSizePos = getPipeSizePosPair(windowWidth * 0.9)
+            Matter.Body.setPosition(obstacleTop.body, pipeSizePos.pipeTop.pos);
+            Matter.Body.setPosition(obstacleBottom.body, pipeSizePos.pipeBottom.pos);
+            obstacleTop.point = false;
+        }
+        
+        // Déplacer les obstacles horizontalement
+        Matter.Body.translate(obstacleTop.body, {x: obstacleSpeed, y: 0});
+        Matter.Body.translate(obstacleBottom.body, {x: obstacleSpeed, y: 0});
+    }
+    
+    // Vérifier si l'oiseau est sorti de l'écran ou s'il est entré en collision avec un obstacle
+    if (entities.Bird.body.position.y > windowHeight || entities.Bird.body.position.y < 0) {
+        dispatch({ type: 'game_over' })
+    }
     Matter.Events.on(engine, 'collisionStart', () => {
         dispatch({type: 'game_over'})
     })
+    
     return entities;
 }
 
-
-export default Physics
+export default Physics;
