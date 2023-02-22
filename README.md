@@ -13,5 +13,5 @@ Jeu Flappy Bird classique avec ajout de quelques fonctionnalités :
 -Présence d'un God Mode (qui est un mode hardcore) qui est possible d'activer avec une action précise.
 
 
-Lien pour télécharger l'APK : 
+Lien pour télécharger l'APK (Android) : 
 
